@@ -16,24 +16,25 @@ connection.connect(function(err) {
 // and to the database "chat".
 
 // Be able to find and retrieve messages
-var retrieveMessages = function(callback) {
+module.exports.retrieveMessages = function(callback) {
   connection.query('SELECT * FROM messages', function(err, rows) {
     if (err) {
       console.log(err);
     } else {
     callback && callback(rows);
+    console.log(rows);
     }
   });
 };
 
 // Be able to store messages
   
-var storeMessages = function(message, callback) {
-  var messageArr = [];
-  messageArr[0] = message.objectId || '';
-  messageArr[1] = message.text || '';
-  messageArr[2] = message.username || '';
-  messageArr[3] = message.roomname || ''; 
+module.exports.storeMessages = function(message, callback) {
+  var messageArr = []; 
+  messageArr[0] = message.objectId || null;
+  messageArr[1] = message.text || null;
+  messageArr[2] = message.username || null;
+  messageArr[3] = message.roomname || null; 
   connection.query('INSERT INTO messages (message_id, message_text, user_id, room_id) VALUES ( ?, ?, ?, ? )', messageArr, function(err, result) {
     if (err) {
       console.log(err);
