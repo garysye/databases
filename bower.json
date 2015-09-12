@@ -1,0 +1,19 @@
+{
+  "name": "chatterbox",
+  "version": "1.0.0",
+  "homepage": "https://github.com/garysye/2015-08-databases",
+  "authors": [
+    "Hack Reactor Students <accounts@hackreactor.com>"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "jquery": "~2.1.4"
+  }
+}

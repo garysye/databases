@@ -5,7 +5,7 @@ var connection = mysql.createConnection({
   database: 'chat'
 });
 
-connection(function(err) {
+connection.connect(function(err) {
   if (err) {
     console.log(err);
   }
@@ -16,21 +16,30 @@ connection(function(err) {
 // and to the database "chat".
 
 // Be able to find and retrieve messages
-var retrieveMessages = function() {
-  var output;
+var retrieveMessages = function(callback) {
   connection.query('SELECT * FROM messages', function(err, rows) {
     if (err) {
       console.log(err);
+    } else {
+    callback && callback(rows);
     }
-    output = rows;
   });
-  return output;
 };
 
 // Be able to store messages
   
-var storeMessages = function(message) {
+var storeMessages = function(message, callback) {
   var messageArr = [];
-  messageArr[0] = "" || message.objectId
-  connection.query('')
+  messageArr[0] = message.objectId || '';
+  messageArr[1] = message.text || '';
+  messageArr[2] = message.username || '';
+  messageArr[3] = message.roomname || ''; 
+  connection.query('INSERT INTO messages (message_id, message_text, user_id, room_id) VALUES ( ?, ?, ?, ? )', messageArr, function(err, result) {
+    if (err) {
+      console.log(err);
+    } else {
+      callback && callback(result);
+    }
+  });
 };
+
