@@ -6,7 +6,7 @@ module.exports = {
       //get data from database
       var processData = function(data) {
         var resultsArr = [];
-        console.log(data)
+        console.log('heeeres data', data);
         data.forEach(function(message) {
           var results = {};
           results.text = message.message_text;
@@ -15,7 +15,7 @@ module.exports = {
           results.username = message.user_id;
           resultsArr.push(results);
         });
-        console.log(resultsArr);
+        console.log('BAM: resultsArray!', resultsArr);
         callback({results: resultsArr});
       };
       //parse data
@@ -23,7 +23,7 @@ module.exports = {
       //build the message
 
       //respond with the message(s)
-      db.retrieveMessages(processData);
+      retrieveMessages(processData);
 
     }, // a function which produces all the messages
     post: function (message, callback) {
@@ -31,7 +31,7 @@ module.exports = {
         callback(results);
       };     
       //respond with indication of success
-      db.storeMessages(message, sendData);
+      storeMessages(message, sendData);
     } // a function which can be used to insert a message into the database
   },
 
@@ -42,3 +42,28 @@ module.exports = {
   }
 };
 
+var retrieveMessages = function(callback) {
+  db.query('SELECT * FROM messages', function(err, rows) {
+    if (err) {
+      console.log(err);
+    } else {
+    callback && callback(rows);
+    console.log("here are the rows: ", rows);
+    }
+  });
+};
+
+var storeMessages = function(message, callback) {
+  var messageArr = []; 
+  messageArr[0] = message.objectId || null;
+  messageArr[1] = message.text || null;
+  messageArr[2] = message.username || null;
+  messageArr[3] = message.roomname || null; 
+  db.query('INSERT INTO messages (message_id, message_text, user_id, room_id) VALUES ( ?, ?, ?, ? )', messageArr, function(err, result) {
+    if (err) {
+      console.log(err);
+    } else {
+      callback && callback(result);
+    }
+  });
+};

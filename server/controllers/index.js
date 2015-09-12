@@ -6,7 +6,7 @@ module.exports = {
       //get the messages from our SQL database
       var callback = function(data) {
         res.writeHead(200);
-        console.log(JSON.stringify(data));
+        console.log('this is our JSONstringified', JSON.stringify(data));
         res.end(JSON.stringify(data));
       };
       //return that data
@@ -14,7 +14,7 @@ module.exports = {
     }, // a function which handles a get request for all messages
     post: function (req, res) {
       //pass the message forward
-      console.log(req.body);
+      console.log('this is THE req.body', req.body);
       var callback = function(result) {
         res.writeHead(201);
         res.end();
