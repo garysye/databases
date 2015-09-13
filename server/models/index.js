@@ -37,15 +37,63 @@ module.exports = {
 
   users: {
     // Ditto as above.
-    get: function () {},
-    post: function () {}
+    get: function (callback) {
+      var formatData = function(data) {
+        var resultsArr = [];
+        data.forEach(function(user) {
+          var result = {};
+          result.username = user.username;
+          result.id = user.uid;
+          result.textColor = user.text_color;
+          resultsArr.push(result);
+        });
+        callback({results: resultsArr});
+      };
+
+      retrieveUsers(formatData); 
+    },
+    post: function (user, callback) {
+      var sendUser = function(result) {
+        callback(result);
+      };
+
+      storeUser(user, sendUser);
+    }
   }
 };
 
-var retrieveMessages = function(callback) {
-  db.query('SELECT * FROM messages', function(err, rows) {
+var retrieveUsers = function(callback) {
+  db.query('SELECT * FROM users', function(err, rows) {
     if (err) {
-      console.log(err);
+      console.log('retrieveusers', err);
+    } else {
+      callback && callback(rows);
+    }
+  });
+
+};
+
+var storeUser = function(user, callback) {
+  var userArr = [];
+  user[0] = user.username || null;
+  user[1] = user.id || null;
+  user[2] = user.textColor || null;
+
+  db.query('INSERT INTO users (username, uid, text_color) VALUES (?, ?, ?)', userArr, function(err, result) {
+    if (err) {
+      console.log('storeuser', err);
+    } else {
+      console.log('kazaa');
+      console.log(result.insertId);
+      callback && callback(result);
+    }
+  });
+};
+
+var retrieveMessages = function(callback) {
+  db.query('SELECT messages.message_id, messages.message_text, users.username, messages.room_id FROM messages, users WHERE messages.user_id = users.uid ', function(err, rows) {
+    if (err) {
+      console.log('retreivemessage', err);
     } else {
     callback && callback(rows);
     console.log("here are the rows: ", rows);
@@ -57,11 +105,11 @@ var storeMessages = function(message, callback) {
   var messageArr = []; 
   messageArr[0] = message.objectId || null;
   messageArr[1] = message.text || null;
-  messageArr[2] = message.username || null;
-  messageArr[3] = message.roomname || null; 
-  db.query('INSERT INTO messages (message_id, message_text, user_id, room_id) VALUES ( ?, ?, ?, ? )', messageArr, function(err, result) {
+  messageArr[2] = message.roomname || null; 
+  messageArr[3] = message.username || null;
+  db.query('INSERT INTO messages (message_id, message_text, room_id, user_id) VALUES (?, ?, ?, (SELECT uid from users WHERE username=?))', messageArr, function(err, result) {
     if (err) {
-      console.log(err);
+      console.log('storemessage',err);
     } else {
       callback && callback(result);
     }
